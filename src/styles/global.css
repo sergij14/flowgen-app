@@ -1,20 +1,24 @@
-/* Design language: a dark "console" shell wrapping a bright, gridded drawing
-   surface — leaning into the blueprint/technical feel of a diagram tool rather
-   than a generic SaaS look. One warm coral accent; monospaced micro-labels. */
+/* Design language: a light, paper-and-ink workspace wrapping a gridded drawing
+   surface — keeping the blueprint/technical feel of a diagram tool. One warm
+   coral accent; monospaced micro-labels; soft shadows for depth on the light bg. */
 
 :root {
-  --bg: #0e1116;
-  --panel: #161b22;
-  --panel-2: #1b2230;
-  --border: #2a313d;
-  --border-strong: #3a4350;
-  --text: #e7eaf0;
-  --muted: #8b93a3;
-  --accent: #ff7a59;
-  --accent-ink: #1a0d09;
-  --canvas: #fbfbf9;
-  --canvas-grid: #e6e7e2;
-  --danger: #ff5f56;
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --panel-2: #f6f7f9;
+  --border: #e4e7ec;
+  --border-strong: #d3d8e0;
+  --text: #1a202c;
+  --muted: #6b7382;
+  --accent: #ff7a59; /* fills + brand mark */
+  --accent-hover: #ff8d70;
+  --accent-strong: #d85433; /* coral for text/hover on a light bg (contrast) */
+  --accent-ink: #3a1505; /* text on an accent fill */
+  --canvas: #ffffff;
+  --canvas-grid: #e7eaef;
+  --danger: #d92d20;
+  --shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
 
   --radius: 12px;
   --radius-sm: 8px;
@@ -66,7 +70,7 @@ button:disabled {
   flex: 0 0 auto;
   padding: 18px 28px;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--panel) 0%, var(--bg) 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
 }
 
 .brand {
@@ -128,6 +132,7 @@ button:disabled {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   height: fit-content;
 }
 
@@ -151,7 +156,9 @@ button:disabled {
   font-family: var(--font-mono);
   font-size: 14px;
   line-height: 1.5;
-  transition: border-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .composer__input::placeholder {
@@ -161,6 +168,7 @@ button:disabled {
 .composer__input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 122, 89, 0.18);
 }
 
 .composer__examples {
@@ -201,6 +209,7 @@ button:disabled {
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
+    color 0.15s ease,
     transform 0.05s ease;
 }
 
@@ -214,18 +223,18 @@ button:disabled {
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #ff8d70;
+  background: var(--accent-hover);
 }
 
 .btn--ghost {
-  background: transparent;
+  background: var(--panel);
   color: var(--text);
   border-color: var(--border-strong);
 }
 
 .btn--ghost:hover:not(:disabled) {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .composer__hint {
@@ -244,6 +253,7 @@ button:disabled {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
@@ -272,7 +282,7 @@ button:disabled {
   padding: 16px;
   border: 1px solid var(--danger);
   border-radius: var(--radius-sm);
-  background: rgba(255, 95, 86, 0.08);
+  background: rgba(217, 45, 32, 0.06);
 }
 
 .panel__error strong {
@@ -324,6 +334,7 @@ button:disabled {
 .tab[aria-selected='true'] {
   background: var(--panel);
   color: var(--text);
+  box-shadow: var(--shadow);
 }
 
 .panel__tools {
@@ -365,6 +376,7 @@ button:disabled {
   padding: 20px;
   min-height: 100%;
   color: var(--text);
+  background: var(--panel-2);
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.6;
