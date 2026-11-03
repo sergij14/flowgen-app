@@ -108,15 +108,20 @@ it runs on `claude-haiku-4-5`, the lowest-cost, lowest-latency model in the fami
 with a deliberately low `max_tokens` ceiling to bound cost and trim time-to-first
 diagram.
 
-### The browser-direct API boundary, stated honestly
+### The API key stays behind a Netlify Function
 
-A frontend-only build calls Anthropic straight from the browser, which means the API
-key is shipped to the client. The SDK forces `dangerouslyAllowBrowser: true` as an
-explicit acknowledgement of that, and the tradeoff is documented at the call site
-rather than hidden. The key lives in a gitignored `.env.local`; `.env.example`
-spells out the setup and flags the production path — put a thin backend proxy in
-front and drop the flag. It's a bounded, deliberate decision for a portfolio demo,
-not an oversight.
+The browser never talks to Anthropic. It posts a prompt to `/api/data`, a Netlify
+Function that holds the key in a server-only environment variable — no `VITE_`
+prefix, so Vite can't inline it into the bundle. The function also owns the model,
+system prompt and token ceiling, so the endpoint can only turn a length-capped prompt
+into a diagram. It can't be repurposed as a free general-purpose LLM proxy.
+
+Two guards protect the quota. A same-origin check stops other sites from calling the
+endpoint through their visitors' browsers, and a per-IP rate limit, enforced by
+Netlify before the function runs, caps scripts that forge the `Origin` header.
+
+Locally, copy `.env.example` to `.env.local` and run `npx netlify dev`, because plain
+`vite` doesn't serve the function.
 
 ### Lazy-loaded diagram renderers
 

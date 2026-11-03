@@ -9,5 +9,8 @@ dist-ssr
 .env.*.local
 *.local
 
+# Netlify CLI local state
+.netlify
+
 .DS_Store
 *.log
