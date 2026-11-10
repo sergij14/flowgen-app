@@ -4,7 +4,9 @@
 export type GenerationState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'success'; code: string }
+  // The first draft didn't parse; a repair request carrying the error is in flight.
+  | { status: 'repairing'; error: string }
+  | { status: 'success'; code: string; repaired: boolean }
   | { status: 'error'; message: string };
 
 export type OutputTab = 'diagram' | 'code';

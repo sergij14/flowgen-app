@@ -12,6 +12,21 @@ mermaid.initialize({
 // Mermaid needs a unique id per render to namespace the SVG it produces.
 let renderCounter = 0;
 
+function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
+// Check source against Mermaid's parser without rendering it. Resolves to the
+// parser's error message (which quotes the failing line), or null when it parses.
+export async function validateMermaid(code: string): Promise<string | null> {
+  try {
+    await mermaid.parse(code);
+    return null;
+  } catch (err) {
+    return errorMessage(err);
+  }
+}
+
 // Validate, then render Mermaid source to an SVG string. Both steps reject on
 // invalid syntax; callers surface the message to the user.
 export async function renderMermaid(code: string): Promise<string> {

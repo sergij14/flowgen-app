@@ -1,12 +1,14 @@
+import type { DiagramRequest } from '../../netlify/lib/diagram-request';
+
 // The Anthropic call and its API key live server-side in netlify/functions/data.ts.
 export async function generateMermaid(
-  prompt: string,
+  request: DiagramRequest,
   signal?: AbortSignal,
 ): Promise<string> {
   const response = await fetch("/api/data", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify(request),
     signal,
   });
 

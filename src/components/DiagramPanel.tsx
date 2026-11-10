@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { useMermaidRenderer } from '../hooks/useMermaidRenderer';
 import type { GenerationState, OutputTab } from '../types';
 
+// Mermaid's parse errors span several lines (message, quoted source, caret);
+// the first line is enough for a status hint.
+function firstLine(text: string): string {
+  return text.split('\n', 1)[0];
+}
+
 interface Props {
   state: GenerationState;
 }
@@ -30,6 +36,20 @@ export function DiagramPanel({ state }: Props) {
       <div className="panel panel--empty">
         <div className="spinner" aria-label="Generating diagram" />
         <p className="panel__hint">Generating…</p>
+      </div>
+    );
+  }
+
+  if (state.status === 'repairing') {
+    return (
+      <div className="panel panel--empty">
+        <div className="spinner" aria-label="Fixing diagram syntax" />
+        <p className="panel__hint">
+          The first draft didn’t parse — asking Haiku to fix it…
+        </p>
+        <p className="panel__detail" title={state.error}>
+          {firstLine(state.error)}
+        </p>
       </div>
     );
   }
@@ -86,6 +106,14 @@ export function DiagramPanel({ state }: Props) {
         </div>
 
         <div className="panel__tools">
+          {state.repaired && !renderError && (
+            <span
+              className="badge"
+              title="The first draft had a syntax error and was fixed automatically."
+            >
+              Auto-fixed
+            </span>
+          )}
           <button type="button" className="btn btn--ghost" onClick={copyCode}>
             {copied ? 'Copied' : 'Copy code'}
           </button>
@@ -109,7 +137,11 @@ export function DiagramPanel({ state }: Props) {
           </pre>
         ) : renderError ? (
           <div className="panel__error" role="alert">
-            <strong>Couldn’t render this diagram.</strong>
+            <strong>
+              {state.repaired
+                ? 'Couldn’t render this diagram, even after an automatic fix.'
+                : 'Couldn’t render this diagram.'}
+            </strong>
             <p>{renderError}</p>
           </div>
         ) : (

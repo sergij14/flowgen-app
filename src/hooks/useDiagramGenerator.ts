@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { validateMermaid } from '../lib/mermaid';
 import { generateMermaid } from '../services/diagram';
+import {
+  generateDiagram,
+  type DiagramPipeline,
+} from '../services/generateDiagram';
 import type { GenerationState } from '../types';
 
 interface DiagramGenerator {
@@ -8,18 +13,27 @@ interface DiagramGenerator {
   cancel: () => void;
 }
 
+const pipeline: DiagramPipeline = {
+  request: generateMermaid,
+  validate: validateMermaid,
+};
+
 export function useDiagramGenerator(): DiagramGenerator {
   const [state, setState] = useState<GenerationState>({ status: 'idle' });
 
   // Track the in-flight request so a new generation (or an unmount) can abort the
   // previous one — otherwise a slow response could land after a newer one and
-  // clobber the UI.
+  // clobber the UI. The same signal covers the repair request.
   const controllerRef = useRef<AbortController | null>(null);
 
   const cancel = useCallback(() => {
     controllerRef.current?.abort();
     controllerRef.current = null;
-    setState((prev) => (prev.status === 'loading' ? { status: 'idle' } : prev));
+    setState((prev) =>
+      prev.status === 'loading' || prev.status === 'repairing'
+        ? { status: 'idle' }
+        : prev,
+    );
   }, []);
 
   const generate = useCallback((prompt: string) => {
@@ -32,10 +46,14 @@ export function useDiagramGenerator(): DiagramGenerator {
 
     setState({ status: 'loading' });
 
-    generateMermaid(trimmed, controller.signal)
-      .then((code) => {
+    const onRepair = (error: string) => {
+      if (!controller.signal.aborted) setState({ status: 'repairing', error });
+    };
+
+    generateDiagram(trimmed, controller.signal, pipeline, onRepair)
+      .then(({ code, repaired }) => {
         if (controller.signal.aborted) return;
-        setState({ status: 'success', code });
+        setState({ status: 'success', code, repaired });
       })
       .catch((err: unknown) => {
         // Aborts are intentional (a newer request, or the user pressing Stop) —

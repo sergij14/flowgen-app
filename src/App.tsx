@@ -22,7 +22,7 @@ export default function App() {
 
       <main className="app__main">
         <Composer
-          isLoading={state.status === 'loading'}
+          isLoading={state.status === 'loading' || state.status === 'repairing'}
           onGenerate={generate}
           onCancel={cancel}
         />

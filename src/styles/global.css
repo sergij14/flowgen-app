@@ -273,6 +273,29 @@ button:disabled {
   line-height: 1.5;
 }
 
+.panel__detail {
+  margin: 0;
+  max-width: 48ch;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  padding: 3px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: rgba(255, 122, 89, 0.1);
+  color: var(--accent-strong);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .panel__error {
   display: flex;
   flex-direction: column;
@@ -339,6 +362,7 @@ button:disabled {
 
 .panel__tools {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
